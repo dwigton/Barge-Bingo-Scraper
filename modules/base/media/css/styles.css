@@ -1,0 +1,144 @@
+/* 
+    Document   : styles
+    Created on : Nov 1, 2011, 12:52:39 PM
+    Author     : daniel
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+#content {
+    font: 14px Arial,sans-serif;
+    margin: 15px auto;
+    width: 880px;
+}
+
+#content > h1 {
+    text-align: center;
+    font-size:32px;
+    letter-spacing: 0.24em;
+}
+
+#content > h1.logged-in {
+    font-size:26px;
+}
+
+.board {
+    margin: 15px 0;
+    table-layout: fixed;
+    border: 1px solid black;
+    width: 880px;
+    height: 480px;
+    background: bottom right url("../images/asds-grid.png") no-repeat;
+}
+
+.board td, .board th{
+    font-weight:normal;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+.board th{
+    border: 1px solid black;
+    line-height: 19px;
+}
+
+.board td {
+    width = 20px;
+    height = 20px;
+}
+
+.board th:first-child {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+}
+
+.taken {
+    background-image: url("../images/taken.png");
+}
+
+.data {
+    cursor: pointer;
+}
+
+.source-post {
+    display:none;
+    position:absolute;
+    padding: 3px;
+    background-color:white;
+    border: 1px solid black;
+}
+
+.source-post h3 {
+    margin: 3px 0;
+}
+
+.additional > * {
+    display: inline-block;
+}
+
+.additional #info {
+    float: right;
+    font-family:"Courier New", Courier, monospace;
+    padding-top: 5px;
+    min-width: 320px;
+}
+
+#user-info {
+    margin: 15px 0;
+}
+
+#user-info h3{
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+#user-info td {
+    padding: 0 20px;
+}
+
+#menu {
+    display: inline-block;
+}
+
+#menu, #menu-icon {
+    border: 1px solid white;
+}
+
+#menu.ui-menu>.ui-state-focus,
+#menu.ui-menu>.ui-state-active {
+    margin: 0;
+}
+
+#display-info h2 {
+    margin: 15px;
+}
+
+.users {
+    list-style-type: none;
+    padding-left:15px;
+    -webkit-column-count: 5; /* Chrome, Safari, Opera */
+    -moz-column-count: 5; /* Firefox */
+    column-count: 5;
+    -webkit-column-gap: 20px; /* Chrome, Safari, Opera */
+    -moz-column-gap: 20px; /* Firefox */
+    column-gap: 20px;
+} 
+
+#display-info .users li {
+    cursor: pointer;
+}
+
+#display-info .users li:hover {
+    background-color: gray;
+}
+
+.error {
+    margin: 10px 0;
+    color: red;
+}
+
+#display-info ol {
+    margin: 15px 30px;
+}

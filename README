@@ -1,0 +1,13 @@
+Barge Bingo Scraper
+===================
+
+The Barge Bingo Scraper is a visualization tool for the
+Games of Barge Bingo on nasaspaceflight.com. The idea
+is to vote for a square in the NSF forums. Each square
+represents a location on Spacex's 
+_Just Read The Instructions_ Autonomous Spaceport Drone Ship
+or ASDS
+
+The Scraper reads the thread and tallies the votes, 
+displaying them on an image of the barge. Missed votes 
+are also listed with the reason they were rejected.
