@@ -1,8 +1,8 @@
 <?php $logged_in = $user->isLoggedIn(); ?>
 <?php if ($logged_in) { ?>
-    <h1 class='logged-in'>NSF SPACEX CRS-6 LANDING BINGO - Admin</h1>
+    <h1 class='logged-in'>NSF SPACEX LANDING BINGO - Admin</h1>
 <?php } else { ?>
-    <h1>NSF SPACEX CRS-6 LANDING BINGO</h1>
+    <h1>NSF SPACEX LANDING BINGO</h1>
 <?php } ?>
 <?php if ($logged_in) { 
     echo "<a href='" . BASE_URL . "/rebuild'>Rebuild From Forum</a>\n"; 

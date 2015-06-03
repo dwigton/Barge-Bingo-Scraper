@@ -2,7 +2,7 @@
 require_once ROOT_PATH.'/modules/phpQuery/phpQuery/phpQuery.php';
 class Modules_Base_Models_NSF 
 {
-    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=36559";
+    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=37737";
     private $grid;
     private $posts;
     private $users;
@@ -48,7 +48,6 @@ class Modules_Base_Models_NSF
                     'name' => $name,
                     'link' => $link, 
                     'date' => $date,
-                    'counter_link' => $counter_link,
                     'post_id' => $post_id,
             );
         }
@@ -122,7 +121,8 @@ class Modules_Base_Models_NSF
         $this->loadPosts();
         if (count($this->posts) == 0 || $refresh) {
             phpQuery::newDocumentFileHTML($this->topic);
-            $pages = intval(pq('.navPages')->elements[2]->textContent);
+            $pages_element = count(pq('.navPages')->elements) - 2;
+            $pages = intval(pq('.navPages')->elements[$pages_element]->textContent);
             $posts = $this->postArray(); 
             for ($page = 1; $page < $pages ; $page++) {
                 phpQuery::newDocumentFileHTML($this->topic.".".($page*20));
