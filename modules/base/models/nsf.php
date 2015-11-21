@@ -120,12 +120,16 @@ class Modules_Base_Models_NSF
     {
         $this->loadPosts();
         if (count($this->posts) == 0 || $refresh) {
-            phpQuery::newDocumentFileHTML($this->topic);
+            $file = file_get_contents($this->topic);
+            $file = $this->sanitizePage($file);
+            phpQuery::newDocumentHTML($file);
             $pages_element = count(pq('.navPages')->elements) - 2;
             $pages = intval(pq('.navPages')->elements[$pages_element]->textContent);
             $posts = $this->postArray(); 
             for ($page = 1; $page < $pages ; $page++) {
-                phpQuery::newDocumentFileHTML($this->topic.".".($page*20));
+                $file = file_get_contents($this->topic.".".($page*20));
+                $file = $this->sanitizePage($file);
+                phpQuery::newDocumentHTML($file);
                 foreach ($this->postArray() as $newpost) {
                     $posts[] = $newpost;
                 }
@@ -391,5 +395,13 @@ class Modules_Base_Models_NSF
         }
 
         return false;
+    }
+
+    protected function sanitizePage($html)
+    {
+        $count = 0;
+        $html = preg_replace('/<div id="box_list_of_likers_[0-9]+">(\s|.)*?(<\/li>)/', '</li>', $html, -1, $count);
+        //$html = preg_replace('/<span id="list_of_likers_\s.*?(<\/li>)/', '</li>', $html, -1, $count);
+        return $html;
     }
 }
