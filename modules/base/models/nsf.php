@@ -2,7 +2,7 @@
 require_once ROOT_PATH.'/modules/phpQuery/phpQuery/phpQuery.php';
 class Modules_Base_Models_NSF 
 {
-    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=37737";
+    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=39320";
     private $grid;
     private $posts;
     private $users;
