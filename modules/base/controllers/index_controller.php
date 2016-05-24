@@ -72,7 +72,8 @@ class Base_Index_Controller_Class
     { 
         $nsf = new Modules_Base_Models_NSF();
         $users = $nsf->getUsers();
-        
+        $hapless = array();
+
         foreach ($users as $user=>$data) {
             if (!isset($data['square'])) {
                 foreach ($data['posts'] as $post) {
@@ -107,6 +108,7 @@ class Base_Index_Controller_Class
     { 
         $nsf = new Modules_Base_Models_NSF();
         $users = $nsf->getUsers();
+        $hopefuls = array();
         
         foreach ($users as $user=>$data) {
             if (isset($data['square'])) {
