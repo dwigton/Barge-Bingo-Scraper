@@ -1,5 +1,5 @@
 <?php
-class Modules_Base_Models_User
+class Modules_Base_Models_User extends Modules_Base_Models_Persistent
 {
     private $user_id;
     private $salt;
@@ -14,13 +14,29 @@ class Modules_Base_Models_User
     
     public function __construct()
     {
-        session_start();
+        $this->loadAll();
+
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
         if (
                 isset($_SESSION['logged_in'])
                 && isset($_SESSION['user_id'])
                 && $_SESSION['logged_in']) {
             $this->user_id = $_SESSION['user_id'];
         }
+    }
+
+
+    protected function resourceName()
+    {
+        return 'admin';
+    }
+
+    protected function properties()
+    {
+        return array('username', 'password');
     }
 
     public function getSalt()
@@ -35,7 +51,7 @@ class Modules_Base_Models_User
     {
         $verified = false;
         if (isset($_SESSION['salt'])) {
-            foreach ($this->users as $index=>$user) {
+            foreach ($this->items as $index=>$user) {
                 $current_user_verified = $user['username'] == $username;
                 $current_user_verified = sha1($this->getSalt().$user['password']) == $hash
                     && $current_user_verified;
@@ -55,7 +71,7 @@ class Modules_Base_Models_User
     public function getUserName()
     {   
         if ($this->user_id) {
-            return $this->users[$this->user_id]['username'];
+            return $this->items[$this->user_id]['username'];
         } else {
             return '';
         }

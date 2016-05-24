@@ -2,7 +2,7 @@
 require_once ROOT_PATH.'/modules/phpQuery/phpQuery/phpQuery.php';
 class Modules_Base_Models_NSF 
 {
-    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=39320";
+    private $topic = "http://forum.nasaspaceflight.com/index.php?topic=";
     private $grid;
     private $posts;
     private $users;
@@ -120,14 +120,16 @@ class Modules_Base_Models_NSF
     {
         $this->loadPosts();
         if (count($this->posts) == 0 || $refresh) {
-            $file = file_get_contents($this->topic);
+            $game = new Modules_Base_Models_Game();
+            $topic = $this->topic . $game->getCurrentGame()['thread_id'];
+            $file = file_get_contents($topic);
             $file = $this->sanitizePage($file);
             phpQuery::newDocumentHTML($file);
             $pages_element = count(pq('.navPages')->elements) - 2;
             $pages = intval(pq('.navPages')->elements[$pages_element]->textContent);
             $posts = $this->postArray(); 
             for ($page = 1; $page < $pages ; $page++) {
-                $file = file_get_contents($this->topic.".".($page*20));
+                $file = file_get_contents($topic.".".($page*20));
                 $file = $this->sanitizePage($file);
                 phpQuery::newDocumentHTML($file);
                 foreach ($this->postArray() as $newpost) {

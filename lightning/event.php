@@ -23,7 +23,8 @@ class Lightning_Event
                 include_once $observer['file'];
                 if (class_exists($observer['class'])) {
                     $observer_class = new $observer['class']();
-                    $observer_class->$observer['function']($data);
+                    $observer_function = $observer['function'];
+                    $observer_class->$observer_function($data);
                     if ($observer['stop']) {
                         return;
                     }

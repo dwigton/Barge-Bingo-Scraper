@@ -1,4 +1,5 @@
 <?php
+ini_set('pcre.jit', false);
 // Include the App class.
 require_once 'lightning/app.php';
 // Adding a function to find all the base lightnining files.

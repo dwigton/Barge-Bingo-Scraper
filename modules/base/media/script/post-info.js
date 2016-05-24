@@ -42,6 +42,7 @@ $(document).ready(function(){
         e.preventDefault();
         $.get('data/userdata/'+encodeURIComponent($('#user-name').val()), function(data){
            $('#user-info').html(data); 
+           trackPage('data/userdata/'+encodeURIComponent($('#user-name').val()));
         });
         return false;
     });
@@ -50,7 +51,8 @@ $(document).ready(function(){
     $('.ui-menu-icon.ui-icon.ui-icon-carat-1-e').remove();
 
     $('#menu-none').click(function(e){
-        unsetClickableUsers();
+       unsetClickableUsers();
+       trackPage('');
        $('#display-info').html(''); 
     });
     
@@ -58,6 +60,7 @@ $(document).ready(function(){
         unsetClickableUsers();
         $.get('hopefuls/false', function(data){
            $('#display-info').html(data); 
+           trackPage('hopefuls');
            setClickableUsers();
         });
     });
@@ -66,6 +69,7 @@ $(document).ready(function(){
         unsetClickableUsers();
         $.get('hapless/false', function(data){
            $('#display-info').html(data); 
+           trackPage('hapless');
            setClickableUsers();
         });
     });
@@ -74,6 +78,7 @@ $(document).ready(function(){
         unsetClickableUsers();
         $.get('help', function(data){
            $('#display-info').html(data); 
+           trackPage('help');
            setClickableUsers();
         });
     });
@@ -82,6 +87,7 @@ $(document).ready(function(){
         unsetClickableUsers();
         $.get('rules', function(data){
            $('#display-info').html(data); 
+           trackPage('rules');
            setClickableUsers();
         });
     });
@@ -104,4 +110,10 @@ function setClickableUsers(){
 
 function unsetClickableUsers(){
     $('#display-info .users li').off();
+}
+
+function trackPage(pageRoute) {
+    if (window._gat && window._gat._getTracker) {
+           _gaq.push(['_trackPageview', pageRoute]);
+    }
 }

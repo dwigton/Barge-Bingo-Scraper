@@ -87,6 +87,9 @@
             <li id='menu-hapless'>Hapless</li>
             <li id='menu-rules'>Rules</li>
             <li id='menu-help'>Help</li>
+            <?php if ($logged_in) { ?>
+            <li id='menu-admin'>Admin</li>
+            <?php } ?>
         </ul>
         </li>
     </ul>

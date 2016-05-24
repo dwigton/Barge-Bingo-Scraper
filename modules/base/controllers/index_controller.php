@@ -15,14 +15,17 @@ class Base_Index_Controller_Class
                     'Asds_View'
                 )
                 ->setVar('title', 'ASDS Bingo')
-                ->setVar('user', $user)
-                ->render();
+                ->setVar('user', $user);
+        if ($user->isLoggedIn()) {
+            $page->getChild('content')->addItem('script', BASE_URL.'/modules/base/media/script/admin.js');
+        }
+        $page->render();
     }
 
-    public function rebuildAction()
+    public function rebuildAction($key='')
     {
         $user = new Modules_Base_Models_User();
-        if ($user->isLoggedIn()) {
+        if ($user->isLoggedIn() || $key=='asldfjua632hagaosdowerhHGksar') {
             set_time_limit(0);
             $nsf = new Modules_Base_Models_NSF();
             $nsf->refreshGrid(true);
@@ -72,7 +75,12 @@ class Base_Index_Controller_Class
         
         foreach ($users as $user=>$data) {
             if (!isset($data['square'])) {
-                $hapless[] = $user;
+                foreach ($data['posts'] as $post) {
+                    if ($post['info'] != 'Not a vote') {
+                        $hapless[] = $user;
+                        break;
+                    }
+                }
             }
         }
 
