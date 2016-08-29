@@ -8,7 +8,7 @@ class Modules_Base_Models_Game extends Modules_Base_Models_Persistent
 
     protected function properties()
     {
-        return array('title', 'thread_id');
+        return array('title', 'thread_id', 'start_time', 'end_time');
     }
 
     public function getCurrentGame()

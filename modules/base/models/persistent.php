@@ -46,6 +46,16 @@ abstract class Modules_Base_Models_Persistent
             $file = file_get_contents(ROOT_PATH."/var/data/{$this->resourceName()}.dat");
             $this->items = json_decode($file, true);
         }
+
+        $properties = $this->properties();
+        foreach ($this->items as $key=>$item) {
+            foreach ($properties as $property) {
+                if (!isset($item[$property])) {
+                    $this->items[$key][$property] = null;
+                }
+            }
+        }
+            
     }
 
     public function emptyItem()

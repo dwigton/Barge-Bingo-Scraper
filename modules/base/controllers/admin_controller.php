@@ -4,11 +4,15 @@ class Base_Admin_Controller_Class
     public function indexAction()
     {
         $thing = new Modules_Base_Models_Game();
-        $id = $thing->getCurrentGame()['thread_id'];
+        $id         = $thing->getCurrentGame()['thread_id'];
+        $start_time = $thing->getCurrentGame()['start_time'];
+        $end_time   = $thing->getCurrentGame()['end_time'];
         $user = new Modules_Base_Models_User();
         if ($user->isLoggedIn()) {
             $content = new Lightning_View('modules/base/templates/admin.php');
             $content->setVar('thread_id', $id);
+            $content->setVar('start_time', $start_time);
+            $content->setVar('end_time', $end_time);
             $content->render();
         }
     }
@@ -27,7 +31,13 @@ class Base_Admin_Controller_Class
         if ($user->isLoggedIn()) {
             if (isset($_POST['forum_topic_id'])) {
                 $game = new Modules_Base_Models_Game();
-                $game->addItem(array('title'=>'The next great game', 'thread_id'=>$_POST['forum_topic_id']));
+                $game->addItem(
+                        array(
+                            'title'      => 'The next great game', 
+                            'thread_id'  => $_POST['forum_topic_id'], 
+                            'start_time' => date('Y/m/d H:i', strToTime($_POST['start_time'])),
+                            'end_time'  => date('Y/m/d H:i', strToTime($_POST['end_time'])),
+                            ));
                 $game->save();
             }
         }

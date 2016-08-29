@@ -156,8 +156,14 @@ class Modules_Base_Models_NSF
             $poster = trim(pq($htmlpost)->find('.poster a')->text());
 
             $date = pq($htmlpost)->find('.keyinfo .smalltext')->text();
+            $date = preg_replace("/\n+/", ' ', $date);
+            $date = str_replace("<strong>", '', $date);
+            $date = str_replace("</strong>", '', $date);
+            $date = str_replace(" at ", ' ', $date);
+
             $date = preg_replace('/^[^:]*: /','',$date);
             $date = preg_replace('/M.*$/','M',$date);
+            $date = date('Y-m-d H:i', strToTime($date)); 
 
             $link = pq($htmlpost)->find('.keyinfo a')->attr('href');
             $link = preg_replace('/PHPSESSID[^&]+&/','',$link);
@@ -241,9 +247,11 @@ class Modules_Base_Models_NSF
     // Fills grid with filtered choices
     protected function fillFromForum($refresh = false)
     {
-        $pattern = '/(^|[^a-zA-Z])([a-wA-W][^a-zA-W0-9]{0,3}[0-9]{1,2}?)([^a-zA-Z0-9]|$)/';
+        $pattern = '/(^|[^a-zA-Z])([a-wA-W][^a-zA-Z0-9]{0,3}[0-9]{1,2}?)([^a-zA-Z0-9]|$)/';
         $posts = $this->getPosts($refresh);
         $choices = array();
+        $game = new Modules_Base_Models_Game();
+        $current_game = $game->getCurrentGame();
 
         foreach ($posts as $post) {
             $matches = array();
@@ -252,85 +260,126 @@ class Modules_Base_Models_NSF
                     $pick = strtoupper(preg_replace('/[^a-zA-Z0-9]/','',$choice));
                     $letter = preg_replace('/[^A-W]/','',$pick);
                     $number = intval(preg_replace('/[^0-9]/','',$pick));
-                    if ($number < 44 && $number > 0) {
-                        if (!$this->override($post['id'], $pick)) {
-                            if (!array_key_exists($pick, $choices)) {
-                                if (!array_search($post['poster'], $choices)) {
-                                    if (!$post['modified']) {
-                                        $choices[$pick] = $post['poster'];
-                                        $this->addChoice(
-                                                $letter, 
-                                                $number, 
-                                                $post['poster'], 
-                                                $post['link'], 
-                                                $post['date'],
-                                                $post['id']
-                                                );
-                                    } else {
-                                        // Post has been edited
-                                        $this->addFailure(
-                                                "Post Edited",
-                                                $letter,
-                                                $number,
-                                                $post['poster'],
-                                                $post['link'],
-                                                $post['date'],
-                                                $post['id']
-                                                );
-                                    }
-                                } else {
-                                    // Poster has already chosen
-                                    $id = array_search($post['poster'], $choices);
-                                    $row = preg_replace('/[^A-W]/','',$id);
-                                    $col = intval(preg_replace('/[^0-9]/','',$id));
 
-                                    $this->addFailure(
-                                            "User has previous choice",
-                                            $letter,
-                                            $number,
-                                            $post['poster'],
-                                            $post['link'],
-                                            $post['date'],
-                                            $post['id'],
-                                            $this->grid[$row][$col]['link']
-                                            );
-                                }
-                            } else {
-                                // This square has already been chosen
-                                if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
-                                    $this->addFailure(
-                                            "Square taken",
-                                            $letter,
-                                            $number,
-                                            $post['poster'],
-                                            $post['link'],
-                                            $post['date'],
-                                            $post['id']
-                                            );
-                                }
-                            }
-                        } else {
-                            // Not a vote
-                            if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
-                                $this->addFailure(
-                                        "Not a vote",
-                                        $letter,
-                                        $number,
-                                        $post['poster'],
-                                        $post['link'],
-                                        $post['date'],
-                                        $post['id']
-                                        );
-                            }
-                        }
+                    // Is this a valid column?
+                    if ($number > 43 || $number < 1) {
+                        continue;
                     }
+
+                    // Has admin overridden vote?
+                    if ($this->override($post['id'], $pick)) {
+                        // Not a vote
+                        if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
+                            $this->addFailure(
+                                    "Not a vote",
+                                    $letter,
+                                    $number,
+                                    $post['poster'],
+                                    $post['link'],
+                                    $post['date'],
+                                    $post['id']
+                                    );
+                        }
+                        continue;
+                    }
+
+                    // Did user post too soon?
+                    if (strToTime($post['date']) < strToTime($current_game['start_time'])) {
+                        // Posted too soon.
+                        if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
+                            $this->addFailure(
+                                    "Posted before start of game",
+                                    $letter,
+                                    $number,
+                                    $post['poster'],
+                                    $post['link'],
+                                    $post['date'],
+                                    $post['id']
+                                    );
+                        }
+                        continue;
+                    }
+
+                    // Did user post too late?
+                    if (strToTime($post['date']) > strToTime($current_game['end_time'])) {
+                        // Posted too late.
+                        if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
+                            $this->addFailure(
+                                    "Posted after end of game",
+                                    $letter,
+                                    $number,
+                                    $post['poster'],
+                                    $post['link'],
+                                    $post['date'],
+                                    $post['id']
+                                    );
+                        }
+                        continue;
+                    }
+
+                    // Has Square been chosen by someone else?
+                    if (array_key_exists($pick, $choices)) {
+                        // This square has already been chosen
+                        if ($post['poster'] !== $this->grid[$letter][$number]['name']) {
+                            $this->addFailure(
+                                    "Square taken",
+                                    $letter,
+                                    $number,
+                                    $post['poster'],
+                                    $post['link'],
+                                    $post['date'],
+                                    $post['id']
+                                    );
+                        }
+                        continue;
+                    }
+
+                    // Has this poster already picked a square?
+                    if (array_search($post['poster'], $choices)) {
+                        // Poster has already chosen
+                        $id = array_search($post['poster'], $choices);
+                        $row = preg_replace('/[^A-W]/','',$id);
+                        $col = intval(preg_replace('/[^0-9]/','',$id));
+
+                        $this->addFailure(
+                                "User has previous choice",
+                                $letter,
+                                $number,
+                                $post['poster'],
+                                $post['link'],
+                                $post['date'],
+                                $post['id'],
+                                $this->grid[$row][$col]['link']
+                                );
+                        continue;
+                    }
+
+                    // Has the Post been modified?
+                    if ($post['modified']) {
+                        // Post has been edited
+                        $this->addFailure(
+                                "Post Edited",
+                                $letter,
+                                $number,
+                                $post['poster'],
+                                $post['link'],
+                                $post['date'],
+                                $post['id']
+                                );
+                        continue;
+                    }
+
+                    // Add the choice.
+                    $choices[$pick] = $post['poster'];
+                    $this->addChoice(
+                            $letter, 
+                            $number, 
+                            $post['poster'], 
+                            $post['link'], 
+                            $post['date'],
+                            $post['id']
+                            );
                 }
-            } else {
-//                echo "<p>"
-//                echo "NO VOTE";
-//                echo "<a href='{$post['link']}' target='_blank'>LINK</a>";
-//                echo htmlspecialchars($post['post']);
-//                echo "</p>";
             }
         }
         $this->saveGrid();
